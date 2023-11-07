@@ -1,0 +1,13 @@
+streamlit
+streamlit_extras
+tqdm
+pycryptodome==3.15.0
+google-cloud-aiplatform==1.35.0
+vertexai
+torch
+pymongo
+PyPDF2==2.12.0
+python-dotenv
+InstructorEmbedding
+sentence-transformers
+langchain
