@@ -25,8 +25,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 os.environ["SENTENCE_TRANSFORMERS_HOME"] = "tmp/st/"
-
-client = MongoClient("mongodb+srv://venkatesh:ashwin123@freetier.kxcgwh2.mongodb.net", tlsCAFile=certifi.where())
+// update the mongodb srv 
+client = MongoClient("mongodbsrv", tlsCAFile=certifi.where())
 db = client["vertexaiApp"]
 
 one_way_hash = lambda x: hashlib.md5(x.encode("utf-8")).hexdigest()
