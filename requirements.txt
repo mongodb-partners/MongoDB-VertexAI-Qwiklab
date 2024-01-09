@@ -11,3 +11,4 @@ python-dotenv
 InstructorEmbedding
 sentence-transformers
 langchain
+python-dotenv
