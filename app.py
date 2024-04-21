@@ -3,14 +3,13 @@ from streamlit_extras.add_vertical_space import add_vertical_space
 
 from PyPDF2 import PdfReader
 
-from langchain.llms import LlamaCpp, VertexAI
-# Todo change to Vertex AI v2
-from langchain.chat_models import ChatVertexAI, ChatOpenAI
-from langchain.vectorstores import MongoDBAtlasVectorSearch
+from langchain_community.llms import LlamaCpp, VertexAI
+from langchain_google_vertexai import ChatVertexAI
+from langchain_mongodb import MongoDBAtlasVectorSearch
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
-from langchain.embeddings import VertexAIEmbeddings
+from langchain_google_vertexai import VertexAIEmbeddings
 from langchain.prompts import PromptTemplate
 
 import hashlib
@@ -25,8 +24,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 os.environ["SENTENCE_TRANSFORMERS_HOME"] = "tmp/st/"
-// update the mongodb srv 
-client = MongoClient("mongodbsrv", tlsCAFile=certifi.where())
+# Update MongoDB URI
+client = MongoClient("mongodb+srv://username:password@host-name", tlsCAFile=certifi.where())
 db = client["vertexaiApp"]
 
 one_way_hash = lambda x: hashlib.md5(x.encode("utf-8")).hexdigest()
@@ -35,7 +34,7 @@ CHAT_VERIFY_COL = "chat-vec-verify"
 CHAT_APP_COL = "chat-vec"
 
 PROMPT = PromptTemplate(template="""
-       Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+       Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Don't be too descriptive and give point to point answer.
        {context}
        ##Question:{question} \n\
        ## Chat History: {chat_history}
@@ -79,7 +78,7 @@ def get_text_chunks(text):
 
 
 def get_embeddings_transformer():
-    embeddings = VertexAIEmbeddings()
+    embeddings = VertexAIEmbeddings(model_name = "textembedding-gecko@001")
     return embeddings
 
 
@@ -93,7 +92,7 @@ def get_vector_store():
 
 @lru_cache(maxsize=1)
 def get_conversation_chain():
-    llm = ChatVertexAI(model_name="chat-bison", max_output_tokens=1000)
+    llm = ChatVertexAI(model_name="gemini-pro", convert_system_message_to_human=True,max_output_tokens=1000)
     retriever = get_vector_store().as_retriever(search_type="mmr", search_kwargs={'k': 10, 'lambda_mult': 0.25})
     memory = ConversationBufferWindowMemory(memory_key='chat_history', k=5, return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
